@@ -18,7 +18,7 @@ Development environment
 Use following command to create a Python virtual environment with all
 necessary dependencies::
 
-    tox -r -e develop
+    tox --recreate -e develop
 
 This creates a Python virtual environment in the ``.tox/develop`` directory. It
 can be activated with the following command::
@@ -35,7 +35,7 @@ In a Python virtual environment run the following command::
 
 Outside of a Python virtual environment run the following command::
 
-    tox -r
+    tox --recreate
 
 
 Build and package
@@ -47,7 +47,7 @@ In a Python virtual environment run the following command::
 
 Outside of a Python virtual environment run the following command::
 
-    tox -r -e package
+    tox --recreate -e package
 
 
 Links
