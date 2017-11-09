@@ -6,6 +6,12 @@
 .. sectnum::
 
 
+Introduction
+============
+
+REST APIs documented and sensible
+
+
 Hacking
 =======
 
