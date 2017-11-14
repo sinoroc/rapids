@@ -4,6 +4,9 @@
 --requirement install.txt
 
 
+WebTest
+
+
 pytest
 pytest-pep8
 pytest-pylint

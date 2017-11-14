@@ -4,6 +4,10 @@
 
 import pkg_resources
 
+from . import config
+from . import decorators
+from . import resources
+
 
 # PEP 396
 __version__ = pkg_resources.get_distribution(
