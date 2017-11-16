@@ -66,9 +66,11 @@ review:
 
 .PHONY: clean
 clean:
-	$(RM) --recursive ./.cache
-	$(RM) --recursive ./build
-	$(RM) --recursive ./dist
+	$(RM) --recursive ./.cache/
+	$(RM) --recursive ./.eggs/
+	$(RM) --recursive ./build/
+	$(RM) --recursive ./dist/
+	$(RM) --recursive ./__pycache__/
 	find $(source_dir) -name '*.dist-info' -type d -exec $(RM) --recursive {} +
 	find $(source_dir) -name '*.egg-info' -type d -exec $(RM) --recursive {} +
 	find $(source_dir) -name '*.pyc' -type f -exec $(RM) {} +
