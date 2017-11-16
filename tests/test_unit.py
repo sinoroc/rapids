@@ -45,7 +45,7 @@ class TestAddResource(unittest.TestCase):
             # pylint: disable=too-few-public-methods
             pass
         try:
-            self.config.add_resource(ValidResource, '', None)
+            self.config.rapids_add_resource(ValidResource, '', None)
         except zope.interface.exceptions.DoesNotImplement as invalid_exception:
             self.fail(invalid_exception)
         return
@@ -59,7 +59,7 @@ class TestAddResource(unittest.TestCase):
             # pylint: disable=too-few-public-methods
             pass
         with self.assertRaises(zope.interface.exceptions.DoesNotImplement):
-            self.config.add_resource(InvalidResource, '', None)
+            self.config.rapids_add_resource(InvalidResource, '', None)
         return
 
 
