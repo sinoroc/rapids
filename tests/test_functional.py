@@ -79,7 +79,7 @@ class TestFunctional(unittest.TestCase):
     def setUp(self):
         self.config = pyramid.testing.setUp()
         self.config.include('rapids.config')
-        self.config.add_resource(Bar, 'bar{num}', Root)
+        self.config.rapids_add_resource(Bar, 'bar{num}', Root)
         self.config.scan('.')
         self.test_application = webtest.TestApp(self.config.make_wsgi_app())
         return
