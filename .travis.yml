@@ -13,6 +13,7 @@ install:
 
 script:
     - 'tox'
+    - 'tox -e package'
 
 sudo: false
 
