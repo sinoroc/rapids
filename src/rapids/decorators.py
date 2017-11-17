@@ -4,7 +4,7 @@
 
 import venusian
 
-from . import resources
+from . import utility
 
 
 def resource(uri_segment, parent):
@@ -13,7 +13,8 @@ def resource(uri_segment, parent):
     return _ResourceHelper(uri_segment, parent)
 
 
-class _ResourceHelper:  # pylint: disable=too-few-public-methods
+class _ResourceHelper:
+    # pylint: disable=too-few-public-methods
 
     def __init__(self, uri_segment, parent):
         self._uri_segment = uri_segment
@@ -29,8 +30,8 @@ class _ResourceHelper:  # pylint: disable=too-few-public-methods
             Venusian is useful to have access to the Pyramid configuration
             from a decorator. This happens when the scan is performed.
         """
-        manager = scanner.config.registry.getUtility(resources.IManager)
-        manager.add_resource(
+        util = scanner.config.registry.getUtility(utility.IUtility)
+        util.add_resource(
             decoratee,
             self._uri_segment,
             self._parent,

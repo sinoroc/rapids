@@ -31,9 +31,10 @@ class IResource(zope.interface.Interface):
 
 
 @zope.interface.implementer(IResource)
-class Base:  # pylint: disable=too-few-public-methods
+class Base:
     """ Base resource
     """
+    # pylint: disable=too-few-public-methods
 
     def __init__(self, request, parent, uri_segment, uri_parameters):
         self.__name__ = uri_segment
@@ -43,21 +44,6 @@ class Base:  # pylint: disable=too-few-public-methods
         return
 
 
-def root_factory(request):
-    """ Root factory for Pyramid traversal
-    """
-    manager = request.registry.getUtility(IManager)
-    return manager.root_factory(request)
-
-
-class IManager(zope.interface.Interface):
-    """ Interface for the resources manager utility
-    """
-    # pylint: disable=inherit-non-class
-    pass
-
-
-@zope.interface.implementer(IManager)
 class Manager:
     """ Resources manager utility
     """
@@ -74,7 +60,7 @@ class Manager:
         """
         zope.interface.verify.verifyClass(IResource, resource)
         regex = self._build_regex(uri_segment)
-        resource.__getitem__ = self._get_child_resource
+        resource.__getitem__ = self._get_child_resource_factory()
         self._resources.append({
             'parent': parent,
             'regex': regex,
@@ -98,6 +84,11 @@ class Manager:
                 )
                 break
         return root
+
+    def _get_child_resource_factory(self):
+        def _get_child_resource(*args, **kwargs):
+            return self.get_child_resource(*args, **kwargs)
+        return _get_child_resource
 
     def get_child_resource(self, resource, uri_segment):
         """ Get child resource of this resource for this URI segment
@@ -139,13 +130,6 @@ class Manager:
         if matched is not None:
             result = matched.groupdict()
         return result
-
-    @staticmethod
-    def _get_child_resource(resource, uri_segment):
-        """ Get child resource of this resource for this URI segment
-        """
-        manager = resource.request.registry.getUtility(IManager)
-        return manager.get_child_resource(resource, uri_segment)
 
     @staticmethod
     def _instantiate(resource, request, parent, uri_segment, uri_parameters):
