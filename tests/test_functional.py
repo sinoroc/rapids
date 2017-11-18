@@ -7,6 +7,7 @@ import unittest
 import rapids
 import pyramid.testing
 import pyramid.view
+import yaml
 import webtest
 
 
@@ -77,7 +78,10 @@ class TestFunctional(unittest.TestCase):
     """
 
     def setUp(self):
-        self.config = pyramid.testing.setUp()
+        settings = {
+            'rapids.title': "test",
+        }
+        self.config = pyramid.testing.setUp(settings=settings)
         self.config.include('rapids.config')
         self.config.rapids_add_resource(Bar, 'bar{num}', Root)
         self.config.scan('.')
@@ -114,6 +118,16 @@ class TestFunctional(unittest.TestCase):
         """ Invalid resource responds with 404
         """
         self.test_application.get('/bazthree', status=404)
+        return
+
+    def test_document_raml(self):
+        """ A valid RAML document is generated
+        """
+        util = self.config.registry.getUtility(rapids.utility.IUtility)
+        raml_document = util.get_document('application/raml+yaml')
+        raml_dict = yaml.load(raml_document)
+        self.assertIn('/', raml_dict)
+        self.assertIn('/foo', raml_dict['/'])
         return
 
 
