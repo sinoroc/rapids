@@ -1,4 +1,4 @@
-""" Module initializer
+""" REST APIs documented and sensible
 """
 
 

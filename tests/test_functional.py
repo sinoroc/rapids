@@ -88,13 +88,31 @@ class TestFunctional(unittest.TestCase):
         pyramid.testing.tearDown()
         return
 
-    def test_get(self):
-        """ Test GET method on endpoints
+    def test_get_root(self):
+        """ Root gives a valid response
         """
         self.test_application.get('/', status=200)
-        self.test_application.get('/foo', status=200)
-        self.test_application.get('/barone', status=200)
-        self.test_application.get('/bartwo', status=200)
+        return
+
+    def test_get_subresource(self):
+        """ Subresource gives a valid response
+        """
+        response = self.test_application.get('/foo', status=200)
+        self.assertIn('foo', response.text)
+        return
+
+    def test_get_with_uri_parameterss(self):
+        """ Resource with URI parameters gives a valid response
+        """
+        response = self.test_application.get('/barone', status=200)
+        self.assertIn('barone', response.text)
+        response = self.test_application.get('/bartwo', status=200)
+        self.assertIn('bartwo', response.text)
+        return
+
+    def test_get_invalid_resource(self):
+        """ Invalid resource responds with 404
+        """
         self.test_application.get('/bazthree', status=404)
         return
 
