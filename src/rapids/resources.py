@@ -1,4 +1,11 @@
 """ Resources
+
+    URI segments are the actual segments within the URLs from incoming HTTP
+    requests.
+    URI segment patterns are the URI segments with replacement markers (such
+    as 'marco{polo}ping{pong}').
+    URI segment regexes are the regexes that allow matching incoming URI
+    segments to a specific URI segment pattern.
 """
 
 
@@ -51,17 +58,17 @@ class Manager:
             None: {
                 r'...regex for empty string...': {
                     'resource_class': <class Root>,
-                    'uri_segment': '',
+                    'uri_segment_pattern': '',
                 },
             },
             <class Root>: {
                 r'...uri_segment_regex...': {
                     'resource_class': <class Foo>,
-                    'uri_segment': 'foo',
+                    'uri_segment_pattern': 'foo',
                 },
                 r'...uri_segment_regex...': {
                     'resource_class': <class Bar>,
-                    'uri_segment': 'bar',
+                    'uri_segment_pattern': 'bar{var}',
                 },
             },
             <class Foo>: { ... },
@@ -80,15 +87,15 @@ class Manager:
         """
         return self._resources
 
-    def add_resource(self, resource_class, uri_segment, parent_class):
-        """ Add resource at this URI segment under this parent class
+    def add_resource(self, resource_class, uri_segment_pattern, parent_class):
+        """ Add resource at this URI segment pattern under this parent class
         """
         zope.interface.verify.verifyClass(IResource, resource_class)
-        uri_segment_regex = self._build_uri_segment_regex(uri_segment)
+        uri_segment_regex = self._build_uri_segment_regex(uri_segment_pattern)
         resource_class.__getitem__ = self._get_child_resource_factory()
         self._resources.setdefault(parent_class, {})[uri_segment_regex] = {
             'resource_class': resource_class,
-            'uri_segment': uri_segment,
+            'uri_segment_pattern': uri_segment_pattern,
         }
         return
 
@@ -136,9 +143,10 @@ class Manager:
         return root_object
 
     @staticmethod
-    def _build_uri_segment_regex(uri_segment):
+    def _build_uri_segment_regex(uri_segment_pattern):
         regex_tokens = []
-        uri_tokens = re.compile(r'(\{[a-zA-Z][^\}]*\})').split(uri_segment)
+        split_regex = r'(\{[a-zA-Z][^\}]*\})'
+        uri_tokens = re.compile(split_regex).split(uri_segment_pattern)
         for (idx, uri_token) in enumerate(uri_tokens):
             if idx % 2 == 1:
                 regex_tokens.append('(?P<{}>[^/]+)'.format(uri_token[1:-1]))

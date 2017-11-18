@@ -29,8 +29,8 @@ def _build_dict(settings, resources):
 def _add(resources, parent_class):
     tree = {}
     for resource in resources.get(parent_class, {}).values():
-        uri_segment = '/{}'.format(resource['uri_segment'])
-        tree[uri_segment] = _add(resources, resource['resource_class'])
+        uri_segment_pattern = '/{}'.format(resource['uri_segment_pattern'])
+        tree[uri_segment_pattern] = _add(resources, resource['resource_class'])
     return tree
 
 
