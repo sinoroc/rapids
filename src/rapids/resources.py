@@ -14,14 +14,14 @@ class IResource(zope.interface.Interface):
     # pylint: disable=inherit-non-class
 
     __name__ = zope.interface.Attribute("""URI segment aka traversal name""")
-    __parent__ = zope.interface.Attribute("""Parent resource""")
+    __parent__ = zope.interface.Attribute("""Parent resource object""")
 
     request = zope.interface.Attribute("""Pyramid request object""")
 
-    def __init__(request, parent, uri_segment, uri_parameters):
+    def __init__(request, parent_object, uri_segment, uri_parameters):
         """ Initializer takes:
             Pyramid request object
-            parent resource
+            parent resource (an instantiated object, not a class)
             URI segment
             URI parameters (a dict)
         """
@@ -36,84 +36,88 @@ class Base:
     """
     # pylint: disable=too-few-public-methods
 
-    def __init__(self, request, parent, uri_segment, uri_parameters):
+    def __init__(self, request, parent_object, uri_segment, uri_parameters):
         self.__name__ = uri_segment
-        self.__parent__ = parent
+        self.__parent__ = parent_object
         self.request = request
         self.uri_parameters = uri_parameters
         return
 
 
 class Manager:
-    """ Resources manager utility
+    """ Resources manager
     """
 
     def __init__(self):
         self._resources = []
         return
 
-    def add_resource(self, resource, uri_segment, parent):
-        """ Add resource
-            resource is a class
-            uri_segment is a pattern (curly braces)
-            parent is a class
+    def add_resource(self, resource_class, uri_segment, parent_class):
+        """ Add resource at this URI segment under this parent class
         """
-        zope.interface.verify.verifyClass(IResource, resource)
-        regex = self._build_regex(uri_segment)
-        resource.__getitem__ = self._get_child_resource_factory()
+        zope.interface.verify.verifyClass(IResource, resource_class)
+        uri_segment_regex = self._build_uri_segment_regex(uri_segment)
+        resource_class.__getitem__ = self._get_child_resource_factory()
         self._resources.append({
-            'parent': parent,
-            'regex': regex,
-            'resource': resource,
+            'parent_class': parent_class,
+            'resource_class': resource_class,
             'uri_segment': uri_segment,
+            'uri_segment_regex': uri_segment_regex,
         })
         return
-
-    def root_factory(self, request):
-        """ Root factory for Pyramid traversal
-        """
-        root = None
-        for resource_iter in self._resources:
-            if resource_iter['parent'] is None:
-                root = self._instantiate(
-                    resource_iter,
-                    request,
-                    parent=None,
-                    uri_segment='',
-                    uri_parameters={},
-                )
-                break
-        return root
 
     def _get_child_resource_factory(self):
         def _get_child_resource(*args, **kwargs):
             return self.get_child_resource(*args, **kwargs)
         return _get_child_resource
 
-    def get_child_resource(self, resource, uri_segment):
-        """ Get child resource of this resource for this URI segment
+    def get_child_resource(self, parent_object, uri_segment):
+        """ Get child resource instance
+            Instantiate a child resource object of this parent resource object
+            corresponding to this URI segment.
         """
-        children = []
-        item = None
-        for resource_iter in self._resources:
-            if (resource_iter['parent'] is not None and
-                    isinstance(resource, resource_iter['parent'])):
-                children.append(resource_iter)
-        for child in children:
-            uri_parameters = self._match(child['regex'], uri_segment)
-            if uri_parameters is not None:
-                item = self._instantiate(
-                    child,
-                    resource.request,
-                    parent=resource,
-                    uri_segment=uri_segment,
-                    uri_parameters=uri_parameters,
+        child_object = None
+        for resource in self._resources:
+            parent_class = resource['parent_class']
+            if (parent_class is not None and
+                    isinstance(parent_object, parent_class)):
+                potential_child = resource
+                uri_parameters = self._match_uri_segment_regex(
+                    potential_child['uri_segment_regex'],
+                    uri_segment,
+                )
+                if uri_parameters is not None:
+                    child = potential_child
+                    child_object = self._instantiate_resource(
+                        child,
+                        parent_object.request,
+                        parent_object,
+                        uri_segment,
+                        uri_parameters,
+                    )
+                    break
+        if child_object is None:
+            raise KeyError()
+        return child_object
+
+    def root_factory(self, request):
+        """ Root factory for Pyramid traversal
+        """
+        root_object = None
+        for resource in self._resources:
+            if resource['parent_class'] is None:
+                root_object = self._instantiate_resource(
+                    resource,
+                    request,
+                    parent_object=None,
+                    uri_segment='',
+                    uri_parameters={},
                 )
                 break
-        return item
+        return root_object
 
     @staticmethod
-    def _build_regex(uri_segment):
+    def _build_uri_segment_regex(uri_segment):
         regex_tokens = []
         uri_tokens = re.compile(r'(\{[a-zA-Z][^\}]*\})').split(uri_segment)
         for (idx, uri_token) in enumerate(uri_tokens):
@@ -124,25 +128,31 @@ class Manager:
         return re.compile(''.join(regex_tokens) + '$')
 
     @staticmethod
-    def _match(regex, uri_segment):
-        result = None
-        matched = regex.match(uri_segment)
+    def _match_uri_segment_regex(uri_segment_regex, uri_segment):
+        uri_parameters = None
+        matched = uri_segment_regex.match(uri_segment)
         if matched is not None:
-            result = matched.groupdict()
-        return result
+            uri_parameters = matched.groupdict()
+        return uri_parameters
 
     @staticmethod
-    def _instantiate(resource, request, parent, uri_segment, uri_parameters):
+    def _instantiate_resource(
+            resource,
+            request,
+            parent_object,
+            uri_segment,
+            uri_parameters,
+    ):
         """ Instantiate a resource
         """
-        instance = resource['resource'](
+        resource_object = resource['resource_class'](
             request,
-            parent,
+            parent_object,
             uri_segment,
             uri_parameters
         )
-        zope.interface.verify.verifyObject(IResource, instance)
-        return instance
+        zope.interface.verify.verifyObject(IResource, resource_object)
+        return resource_object
 
 
 # EOF
