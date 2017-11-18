@@ -70,6 +70,12 @@ class Manager:
         self._root_resource_class = None
         return
 
+    @property
+    def resources(self):
+        """ Resources
+        """
+        return self._resources
+
     def add_resource(self, resource_class, uri_segment, parent_class):
         """ Add resource at this URI segment under this parent class
         """

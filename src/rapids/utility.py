@@ -4,6 +4,7 @@
 
 import zope.interface
 
+from . import documents
 from . import resources
 
 
@@ -22,17 +23,30 @@ class Utility:
         utility objects.
     """
 
-    def __init__(self):
+    def __init__(self, settings):
+        self._documents_manager = documents.Manager(settings)
         self._resources_manager = resources.Manager()
         return
 
     def add_resource(self, *args, **kwargs):
-        """ Add resource
+        """ Let the resources manager add a resource
         """
         return self._resources_manager.add_resource(*args, **kwargs)
 
+    def build_documents(self, *args, **kwargs):
+        """ Let the documents manager build the documents
+        """
+        docs_manager = self._documents_manager
+        the_resources = self._resources_manager.resources
+        return docs_manager.build_documents(the_resources, *args, **kwargs)
+
+    def get_document(self, *args, **kwargs):
+        """ Let the documents manager return a document
+        """
+        return self._documents_manager.get_document(*args, **kwargs)
+
     def root_factory(self, *args, **kwargs):
-        """ Root factory for Pyramid traversal
+        """ Let the resources manager return a Pyramid traversal root factory
         """
         return self._resources_manager.root_factory(*args, **kwargs)
 
