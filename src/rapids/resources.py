@@ -129,8 +129,8 @@ class Manager:
             raise KeyError()
         return child_object
 
-    def root_factory(self, request):
-        """ Root factory for Pyramid traversal
+    def get_root(self, request):
+        """ Get Pyramid traversal root resource object
         """
         root_resource = self._resources[None][self._root_uri_segment_regex]
         root_object = self._instantiate_resource(

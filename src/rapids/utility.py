@@ -45,10 +45,10 @@ class Utility:
         """
         return self._documents_manager.get_document(*args, **kwargs)
 
-    def root_factory(self, *args, **kwargs):
-        """ Let the resources manager return a Pyramid traversal root factory
+    def get_root(self, *args, **kwargs):
+        """ Let the resources manager return the Pyramid traversal root object
         """
-        return self._resources_manager.root_factory(*args, **kwargs)
+        return self._resources_manager.get_root(*args, **kwargs)
 
 
 # EOF

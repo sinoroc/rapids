@@ -17,9 +17,9 @@ def _build_documents(event):
     return util.build_documents()
 
 
-def _root_factory(request, *args, **kwargs):
+def _get_root(request, *args, **kwargs):
     util = request.registry.getUtility(utility.IUtility)
-    return util.root_factory(request, *args, **kwargs)
+    return util.get_root(request, *args, **kwargs)
 
 
 def includeme(config):
@@ -32,7 +32,7 @@ def includeme(config):
         _build_documents,
         pyramid.events.ApplicationCreated,
     )
-    config.set_root_factory(_root_factory)
+    config.set_root_factory(_get_root)
     return
 
 
