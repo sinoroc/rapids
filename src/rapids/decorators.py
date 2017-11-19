@@ -17,8 +17,8 @@ def resource(uri_segment, parent_class):
 class _ResourceHelper:
     # pylint: disable=too-few-public-methods
 
-    def __init__(self, uri_segment, parent_class):
-        self._uri_segment = uri_segment
+    def __init__(self, uri_segment_pattern, parent_class):
+        self._uri_segment_pattern = uri_segment_pattern
         self._parent_class = parent_class
         return
 
@@ -34,7 +34,7 @@ class _ResourceHelper:
         util = scanner.config.registry.getUtility(utility.IUtility)
         util.add_resource(
             resource_class,
-            self._uri_segment,
+            self._uri_segment_pattern,
             self._parent_class,
         )
         return

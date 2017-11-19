@@ -25,7 +25,7 @@ def _get_root(request, *args, **kwargs):
 def includeme(config):
     """ Include the library in the Pyramid application
     """
-    util = utility.Utility(config.registry.settings)
+    util = utility.Utility(config)
     config.registry.registerUtility(util, utility.IUtility)
     config.add_directive('rapids_add_resource', _add_resource)
     config.add_subscriber(

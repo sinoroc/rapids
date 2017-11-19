@@ -9,8 +9,8 @@ class Manager:
     """ Manager for documents
     """
 
-    def __init__(self, settings):
-        self._settings = settings
+    def __init__(self, config):
+        self._config = config
         self._documents = {}
         return
 
@@ -18,7 +18,7 @@ class Manager:
         """ Build documents for the resources
         """
         self._documents['application/raml+yaml'] = raml.build(
-            self._settings,
+            self._config.registry.settings,
             resources,
         )
         return

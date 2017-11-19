@@ -23,9 +23,9 @@ class Utility:
         utility objects.
     """
 
-    def __init__(self, settings):
-        self._documents_manager = documents.Manager(settings)
-        self._resources_manager = resources.Manager()
+    def __init__(self, config):
+        self._documents_manager = documents.Manager(config)
+        self._resources_manager = resources.Manager(config)
         return
 
     def add_resource(self, *args, **kwargs):

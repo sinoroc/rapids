@@ -76,7 +76,8 @@ class Manager:
         }
     """
 
-    def __init__(self):
+    def __init__(self, config):
+        self._config = config
         self._resources = {}
         self._root_uri_segment_regex = self._build_uri_segment_regex('')
         return
