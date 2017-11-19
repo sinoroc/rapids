@@ -22,11 +22,11 @@ def _build_dict(settings, resources):
     document_dict = {
         'title': settings['rapids.title'],
     }
-    document_dict.update(_add(resources, None))
+    document_dict.update(_add(resources))
     return document_dict
 
 
-def _add(resources, parent_class):
+def _add(resources, parent_class=None):
     tree = {}
     for resource in resources.get(parent_class, {}).values():
         uri_segment_pattern = '/{}'.format(resource['uri_segment_pattern'])
