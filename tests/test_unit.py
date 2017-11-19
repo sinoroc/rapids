@@ -4,10 +4,11 @@
 
 import unittest
 
-import rapids
 import pyramid.testing
-import pyramid.view
+import rapids
 import zope.interface
+
+import base
 
 
 class TestProjectVersion(unittest.TestCase):
@@ -23,17 +24,13 @@ class TestProjectVersion(unittest.TestCase):
         return
 
 
-class TestAddResource(unittest.TestCase):
+class TestAddResource(base.Base, unittest.TestCase):
     """ Add resources
     """
 
     def setUp(self):
         self.config = pyramid.testing.setUp()
         self.config.include('rapids.config')
-        return
-
-    def tearDown(self):
-        pyramid.testing.tearDown()
         return
 
     def test_add_valid_resource(self):

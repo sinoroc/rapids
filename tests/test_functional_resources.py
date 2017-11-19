@@ -1,95 +1,68 @@
-""" Functional test
+""" Functional test for resources
 """
 
 
 import unittest
 
+import pyramid
 import rapids
-import pyramid.testing
-import pyramid.view
 import yaml
 import webtest
 
-
-class Resource(rapids.resources.Base):
-    """ Base resource class
-    """
-    # pylint: disable=too-few-public-methods
-
-    def view(self, unused_request):
-        """ Default view
-        """
-        return pyramid.httpexceptions.HTTPOk(self.__name__)
+import base
 
 
-@rapids.decorators.resource('', None)
-class Root(Resource):
+class Root(rapids.resources.Base):
     """ Root resource
     """
     # pylint: disable=too-few-public-methods
     pass
 
 
-@rapids.decorators.resource('foo', Root)
-class Foo(Resource):
+class Foo(rapids.resources.Base):
     """ Foo resource
     """
     # pylint: disable=too-few-public-methods
     pass
 
 
-class Bar(Resource):
+class Bar(rapids.resources.Base):
     """ Bar resource
     """
     # pylint: disable=too-few-public-methods
     pass
 
 
-@pyramid.view.view_config(context=Root)
-def root_view(resource, request):
+def root_view(resource, unused_request):
     """ View for the root resource
     """
-    return resource.view(request)
+    return pyramid.httpexceptions.HTTPOk(resource.__name__)
 
 
-@pyramid.view.view_config(context=Foo)
-def foo_view(resource, request):
-    """ View for the foo resource
-    """
-    return resource.view(request)
-
-
-@pyramid.view.view_config(context=Bar)
-def bar_view(resource, request):
-    """ View for the bar resource
-    """
-    return resource.view(request)
-
-
-@pyramid.view.view_config(context=pyramid.httpexceptions.HTTPException)
 def http_exception_view(http_exception, unused_request):
     """ View for HTTP exceptions
     """
     return http_exception
 
 
-class TestFunctional(unittest.TestCase):
+class TestFunctional(base.Base, unittest.TestCase):
     """ Functional test
     """
 
     def setUp(self):
-        settings = {
-            'rapids.title': "test",
-        }
-        self.config = pyramid.testing.setUp(settings=settings)
+        self.config = pyramid.testing.setUp(settings=self.settings)
         self.config.include('rapids.config')
+        self.config.rapids_add_resource(Root, '', None)
+        self.config.rapids_add_resource(Foo, 'foo', Root)
         self.config.rapids_add_resource(Bar, 'bar{num}', Root)
-        self.config.scan('.')
+        self.config.add_view(root_view, context=Root)
+        self.config.add_view(root_view, context=Foo)
+        self.config.add_view(root_view, context=Bar)
+        self.config.add_view(
+            http_exception_view,
+            context=pyramid.httpexceptions.HTTPException,
+        )
         self.test_application = webtest.TestApp(self.config.make_wsgi_app())
-        return
-
-    def tearDown(self):
-        pyramid.testing.tearDown()
         return
 
     def test_get_root(self):
@@ -128,6 +101,7 @@ class TestFunctional(unittest.TestCase):
         raml_dict = yaml.load(raml_document)
         self.assertIn('/', raml_dict)
         self.assertIn('/foo', raml_dict['/'])
+        self.assertIn('/bar{num}', raml_dict['/'])
         return
 
 
