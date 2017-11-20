@@ -9,10 +9,13 @@
 """
 
 
+import inspect
 import re
 
 import zope.interface
 import zope.interface.verify  # Should not be needed.
+
+from . import exceptions
 
 
 class IResource(zope.interface.Interface):
@@ -53,7 +56,7 @@ class Base:
 
 class Manager:
     """ Resources manager
-        The resources are stored in such a structure:
+        The '_resources_tree' member is a tree-ish structure:
         {
             None: {
                 r'...regex for empty string...': {
@@ -78,15 +81,16 @@ class Manager:
 
     def __init__(self, config):
         self._config = config
-        self._resources = {}
+        self._resources_tree = {}
+        self._resources_map = {}
         self._root_uri_segment_regex = self._build_uri_segment_regex('')
         return
 
     @property
-    def resources(self):
-        """ Resources
+    def resources_tree(self):
+        """ Resources tree
         """
-        return self._resources
+        return self._resources_tree
 
     def add_resource(self, resource_class, uri_segment_pattern, parent_class):
         """ Add resource at this URI segment pattern under this parent class
@@ -94,10 +98,29 @@ class Manager:
         zope.interface.verify.verifyClass(IResource, resource_class)
         uri_segment_regex = self._build_uri_segment_regex(uri_segment_pattern)
         resource_class.__getitem__ = self._get_child_resource_factory()
-        self._resources.setdefault(parent_class, {})[uri_segment_regex] = {
-            'resource_class': resource_class,
-            'uri_segment_pattern': uri_segment_pattern,
-        }
+        resource = self._resources_map.setdefault(resource_class, {})
+        resource['resource_class'] = resource_class
+        resource['uri_segment_pattern'] = uri_segment_pattern
+        uri_segment_regexes = self._resources_tree.setdefault(parent_class, {})
+        uri_segment_regexes[uri_segment_regex] = resource
+        return
+
+    def add_view(
+            self,
+            view_callable,
+            resource_class,
+            request_method='GET',
+    ):
+        """ Add the view callable as a view for this resource
+        """
+        view = _View(view_callable)
+        self._config.add_view(
+            context=resource_class,
+            request_method=request_method,
+            view=view.view_callable,
+        )
+        resource = self._resources_map.setdefault(resource_class, {})
+        resource.setdefault('methods', {})[request_method] = {}
         return
 
     def _get_child_resource_factory(self):
@@ -111,7 +134,7 @@ class Manager:
             corresponding to this URI segment.
         """
         child_object = None
-        candidates = self._resources[type(parent_object)]
+        candidates = self._resources_tree[type(parent_object)]
         for (uri_segment_regex, resource) in candidates.items():
             uri_parameters = self._match_uri_segment_regex(
                 uri_segment_regex,
@@ -133,9 +156,8 @@ class Manager:
     def get_root(self, request):
         """ Get Pyramid traversal root resource object
         """
-        root_resource = self._resources[None][self._root_uri_segment_regex]
         root_object = self._instantiate_resource(
-            root_resource,
+            self._resources_tree[None][self._root_uri_segment_regex],
             request,
             parent_object=None,
             uri_segment='',
@@ -181,6 +203,32 @@ class Manager:
         )
         zope.interface.verify.verifyObject(IResource, resource_object)
         return resource_object
+
+
+class _View:
+    # pylint: disable=too-few-public-methods
+
+    def __init__(self, user_view_callable):
+        self._user_view_callable = user_view_callable
+        return
+
+    def view_callable(self, *args, **kwargs):
+        """ The view callable
+        """
+        result = self._run_user_view_callable(*args, **kwargs)
+        return result
+
+    def _run_user_view_callable(self, *args, **kwargs):
+        result = None
+        if inspect.isclass(self._user_view_callable):
+            # view callable is a class callable
+            result = self._user_view_callable(*args, **kwargs)()
+        elif inspect.isfunction(self._user_view_callable):
+            # view callable is a function
+            result = self._user_view_callable(*args, **kwargs)
+        else:
+            raise exceptions.ViewCallableInvalid()
+        return result
 
 
 # EOF

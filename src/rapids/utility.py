@@ -33,12 +33,17 @@ class Utility:
         """
         return self._resources_manager.add_resource(*args, **kwargs)
 
+    def add_view(self, *args, **kwargs):
+        """ Let the resources manager add a view
+        """
+        return self._resources_manager.add_view(*args, **kwargs)
+
     def build_documents(self, *args, **kwargs):
         """ Let the documents manager build the documents
         """
         docs_manager = self._documents_manager
-        the_resources = self._resources_manager.resources
-        return docs_manager.build_documents(the_resources, *args, **kwargs)
+        resources_tree = self._resources_manager.resources_tree
+        return docs_manager.build_documents(resources_tree, *args, **kwargs)
 
     def get_document(self, *args, **kwargs):
         """ Let the documents manager return a document

@@ -7,11 +7,11 @@ import venusian
 from . import utility
 
 
-def resource(uri_segment, parent_class):
+def resource(*args, **kwargs):
     """ Class decorator
         The decorated class is added as a resource.
     """
-    return _ResourceHelper(uri_segment, parent_class)
+    return _ResourceHelper(*args, **kwargs)
 
 
 class _ResourceHelper:
@@ -37,6 +37,30 @@ class _ResourceHelper:
             self._uri_segment_pattern,
             self._parent_class,
         )
+        return
+
+
+def view(*args, **kwargs):
+    """ Decorator allowing to add views
+        This decorator works on functions and callable classes.
+    """
+    return _ViewHelper(*args, **kwargs)
+
+
+class _ViewHelper:
+    # pylint: disable=too-few-public-methods
+
+    def __init__(self, resource_class):
+        self._resource_class = resource_class
+        return
+
+    def __call__(self, view_callable):
+        venusian.attach(view_callable, self._callback)
+        return view_callable
+
+    def _callback(self, scanner, unused_name, view_callable):
+        util = scanner.config.registry.getUtility(utility.IUtility)
+        util.add_view(view_callable, self._resource_class)
         return
 
 
