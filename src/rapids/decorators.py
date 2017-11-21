@@ -2,8 +2,11 @@
 """
 
 
+import inspect
+
 import venusian
 
+from . import exceptions
 from . import utility
 
 
@@ -52,6 +55,7 @@ class _ViewHelper:
 
     def __init__(self, resource_class):
         self._resource_class = resource_class
+        self._view_callable = None
         return
 
     def __call__(self, view_callable):
@@ -59,9 +63,22 @@ class _ViewHelper:
         return view_callable
 
     def _callback(self, scanner, unused_name, view_callable):
+        self._view_callable = view_callable
         util = scanner.config.registry.getUtility(utility.IUtility)
-        util.add_view(view_callable, self._resource_class)
+        util.add_view(self._wrapped_view_callable, self._resource_class)
         return
+
+    def _wrapped_view_callable(self, *args, **kwargs):
+        result = None
+        if inspect.isclass(self._view_callable):
+            # view callable is a class callable
+            result = self._view_callable(*args, **kwargs)()
+        elif inspect.isfunction(self._view_callable):
+            # view callable is a function
+            result = self._view_callable(*args, **kwargs)
+        else:
+            raise exceptions.ViewCallableInvalid()
+        return result
 
 
 # EOF

@@ -100,8 +100,11 @@ class TestFunctional(base.Base, unittest.TestCase):
         raml_document = util.get_document('application/raml+yaml')
         raml_dict = yaml.load(raml_document)
         self.assertIn('/', raml_dict)
+        self.assertIn('get', raml_dict['/'])
         self.assertIn('/foo', raml_dict['/'])
+        self.assertIn('get', raml_dict['/']['/foo'])
         self.assertIn('/bar{num}', raml_dict['/'])
+        self.assertIn('get', raml_dict['/']['/bar{num}'])
         return
 
 
