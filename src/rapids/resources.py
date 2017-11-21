@@ -9,13 +9,10 @@
 """
 
 
-import inspect
 import re
 
 import zope.interface
 import zope.interface.verify  # Should not be needed.
-
-from . import exceptions
 
 
 class IResource(zope.interface.Interface):
@@ -113,15 +110,33 @@ class Manager:
     ):
         """ Add the view callable as a view for this resource
         """
-        view = _View(view_callable)
         self._config.add_view(
             context=resource_class,
             request_method=request_method,
-            view=view.view_callable,
+            view=self._wrapped_view_callable_factory(view_callable),
         )
         resource = self._resources_map.setdefault(resource_class, {})
         resource.setdefault('methods', {})[request_method] = {}
         return
+
+    @staticmethod
+    def _wrapped_view_callable_factory(view_callable):
+        def _wrapped_view_callable(*args, **kwargs):
+            # This is the function that is actually registered in Pyramid
+            return Manager._run_view_callable(view_callable, *args, **kwargs)
+        return _wrapped_view_callable
+
+    @staticmethod
+    def _run_view_callable(view_callable, *args, **kwargs):
+        # * do some pre processing (verify input)
+        # result = pre_process(...)
+        # * call the view callable
+        result = view_callable(*args, **kwargs)
+        # * do some post processing (verify output)
+        # result = post_process(...)
+        # * render output according to media type
+        # result = render(...)
+        return result
 
     def _get_child_resource_factory(self):
         def _get_child_resource(*args, **kwargs):
@@ -203,32 +218,6 @@ class Manager:
         )
         zope.interface.verify.verifyObject(IResource, resource_object)
         return resource_object
-
-
-class _View:
-    # pylint: disable=too-few-public-methods
-
-    def __init__(self, user_view_callable):
-        self._user_view_callable = user_view_callable
-        return
-
-    def view_callable(self, *args, **kwargs):
-        """ The view callable
-        """
-        result = self._run_user_view_callable(*args, **kwargs)
-        return result
-
-    def _run_user_view_callable(self, *args, **kwargs):
-        result = None
-        if inspect.isclass(self._user_view_callable):
-            # view callable is a class callable
-            result = self._user_view_callable(*args, **kwargs)()
-        elif inspect.isfunction(self._user_view_callable):
-            # view callable is a function
-            result = self._user_view_callable(*args, **kwargs)
-        else:
-            raise exceptions.ViewCallableInvalid()
-        return result
 
 
 # EOF
