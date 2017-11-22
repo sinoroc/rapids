@@ -9,7 +9,34 @@
 Introduction
 ============
 
-REST APIs documented and sensible
+**REST APIs documented and sensible**
+
+Build automatically documented REST APIs with the `Pyramid framework`_.
+
+
+Usage
+=====
+
+.. code:: python
+
+    @rapids.decorators.resource('', None)
+    class Root(rapids.resources.Base):
+        pass
+
+
+    @rapids.decorators.view(Root)
+    def root_view(resource, request):
+        return pyramid.httpexceptions.HTTPOk()
+
+
+    @rapids.decorators.resource('foo', Root)
+    class Foo(rapids.resources.Base):
+        pass
+
+
+    @rapids.decorators.view(Foo)
+    def foo_view(resource, request):
+        return pyramid.httpexceptions.HTTPOk()
 
 
 Hacking
@@ -62,6 +89,7 @@ Links
 .. target-notes::
 
 .. _`GNU Make`: https://www.gnu.org/software/make/
+.. _`Pyramid framework`: https://trypyramid.com/
 .. _`pytest`: http://pytest.org/
 .. _`tox`: https://tox.readthedocs.io/
 
