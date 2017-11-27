@@ -36,15 +36,15 @@ Usage
 
     @rapids.decorators.view_defaults(context=Foo)
     class FooView:
-        def __init__(resource, request):
+        def __init__(self, resource, request):
             pass
 
         @rapids.decorators.view(request_method='GET')
-        def _get_view(resource, request):
+        def _get_view(self):
             return pyramid.httpexceptions.HTTPOk()
 
         @rapids.decorators.view(request_method='POST')
-        def _post_view(resource, request):
+        def _post_view(self):
             return pyramid.httpexceptions.HTTPCreated()
 
 
