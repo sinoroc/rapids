@@ -102,21 +102,18 @@ class Manager:
         uri_segment_regexes[uri_segment_regex] = resource
         return
 
-    def add_view(
-            self,
-            view_callable,
-            resource_class,
-            request_method='GET',
-    ):
+    def add_view(self, **kwargs):
         """ Add the view callable as a view for this resource
         """
-        self._config.add_view(
-            context=resource_class,
-            request_method=request_method,
-            view=self._wrapped_view_callable_factory(view_callable),
+        view_config = kwargs.copy()
+        view_callable = view_config['view']
+        view_config['view'] = self._wrapped_view_callable_factory(
+            view_callable,
         )
-        resource = self._resources_map.setdefault(resource_class, {})
-        resource.setdefault('methods', {})[request_method] = {}
+        self._config.add_view(**view_config)
+        resource = self._resources_map.setdefault(view_config['context'], {})
+        request_method = view_config.get('request_method', 'get')
+        resource.setdefault('methods', {})[request_method.lower()] = {}
         return
 
     @staticmethod

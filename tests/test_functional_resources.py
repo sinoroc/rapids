@@ -12,36 +12,26 @@ import webtest
 import base
 
 
-class Root(rapids.resources.Base):
-    """ Root resource
-    """
+class _Root(rapids.resources.Base):
     # pylint: disable=too-few-public-methods
     pass
 
 
-class Foo(rapids.resources.Base):
-    """ Foo resource
-    """
+class _Foo(rapids.resources.Base):
     # pylint: disable=too-few-public-methods
     pass
 
 
-class Bar(rapids.resources.Base):
-    """ Bar resource
-    """
+class _Bar(rapids.resources.Base):
     # pylint: disable=too-few-public-methods
     pass
 
 
-def root_view(resource, unused_request):
-    """ View for the root resource
-    """
+def _root_view(resource, unused_request):
     return pyramid.httpexceptions.HTTPOk(resource.__name__)
 
 
-def http_exception_view(http_exception, unused_request):
-    """ View for HTTP exceptions
-    """
+def _http_exception_view(http_exception, unused_request):
     return http_exception
 
 
@@ -52,14 +42,14 @@ class TestFunctional(base.Base, unittest.TestCase):
     def setUp(self):
         self.config = pyramid.testing.setUp(settings=self.settings)
         self.config.include('rapids.config')
-        self.config.rapids_add_resource(Root, '', None)
-        self.config.rapids_add_resource(Foo, 'foo', Root)
-        self.config.rapids_add_resource(Bar, 'bar{num}', Root)
-        self.config.rapids_add_view(root_view, Root)
-        self.config.rapids_add_view(root_view, Foo)
-        self.config.rapids_add_view(root_view, Bar)
+        self.config.rapids_add_resource(_Root, '', None)
+        self.config.rapids_add_resource(_Foo, 'foo', _Root)
+        self.config.rapids_add_resource(_Bar, 'bar{num}', _Root)
+        self.config.rapids_add_view(view=_root_view, context=_Root)
+        self.config.rapids_add_view(view=_root_view, context=_Foo)
+        self.config.rapids_add_view(view=_root_view, context=_Bar)
         self.config.add_view(
-            http_exception_view,
+            _http_exception_view,
             context=pyramid.httpexceptions.HTTPException,
         )
         self.test_application = webtest.TestApp(self.config.make_wsgi_app())

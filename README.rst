@@ -26,7 +26,7 @@ Usage
 
     @rapids.decorators.view(Root)
     def root_view(resource, request):
-        return pyramid.httpexceptions.HTTPOk()
+        return pyramid.httpexceptions.HTTPNotFound()
 
 
     @rapids.decorators.resource('foo', Root)
@@ -34,9 +34,18 @@ Usage
         pass
 
 
-    @rapids.decorators.view(Foo)
-    def foo_view(resource, request):
-        return pyramid.httpexceptions.HTTPOk()
+    @rapids.decorators.view_defaults(context=Foo)
+    class FooView:
+        def __init__(resource, request):
+            pass
+
+        @rapids.decorators.view(request_method='GET')
+        def _get_view(resource, request):
+            return pyramid.httpexceptions.HTTPOk()
+
+        @rapids.decorators.view(request_method='POST')
+        def _post_view(resource, request):
+            return pyramid.httpexceptions.HTTPCreated()
 
 
 Hacking

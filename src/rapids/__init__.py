@@ -6,6 +6,7 @@ import pkg_resources
 
 from . import config
 from . import decorators
+from . import documents
 from . import resources
 
 
