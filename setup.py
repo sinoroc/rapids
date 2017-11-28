@@ -13,6 +13,7 @@ DESCRIPTION = "rapids library"
 
 INSTALL_REQUIREMENTS = [
     'pyramid',
+    'PyYaml',
     'venusian',
     'zope.interface',
 ]
