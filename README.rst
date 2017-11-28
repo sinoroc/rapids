@@ -24,7 +24,7 @@ Usage
         pass
 
 
-    @rapids.decorators.view(Root)
+    @pyramid.view.view_config(context=Root, rapids='')
     def root_view(resource, request):
         return pyramid.httpexceptions.HTTPNotFound()
 
@@ -34,16 +34,16 @@ Usage
         pass
 
 
-    @rapids.decorators.view_defaults(context=Foo)
+    @pyramid.view.view_defaults(context=Foo, rapids='')
     class FooView:
         def __init__(self, resource, request):
             pass
 
-        @rapids.decorators.view(request_method='GET')
+        @pyramid.view.view_config(request_method='GET')
         def _get_view(self):
             return pyramid.httpexceptions.HTTPOk()
 
-        @rapids.decorators.view(request_method='POST')
+        @pyramid.view.view_config(request_method='POST')
         def _post_view(self):
             return pyramid.httpexceptions.HTTPCreated()
 
