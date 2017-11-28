@@ -3,6 +3,8 @@
 
 pyramid
 PyYaml
+venusian
+zope.interface
 
 
 # EOF
