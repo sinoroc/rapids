@@ -125,15 +125,11 @@ class Manager:
         return result
 
     def _get_child_resource_factory(self):
-        def _get_child_resource(*args, **kwargs):
-            return self.get_child_resource(*args, **kwargs)
-        return _get_child_resource
+        def _get_child_resource_wrapped(*args, **kwargs):
+            return self._get_child_resource(*args, **kwargs)
+        return _get_child_resource_wrapped
 
-    def get_child_resource(self, parent_object, uri_segment):
-        """ Get child resource instance
-            Instantiate a child resource object of this parent resource object
-            corresponding to this URI segment.
-        """
+    def _get_child_resource(self, parent_object, uri_segment):
         child_object = None
         candidates = self._resources_tree[type(parent_object)]
         for (uri_segment_regex, resource) in candidates.items():
