@@ -55,5 +55,10 @@ class Utility:
         """
         return self._resources_manager.get_root(*args, **kwargs)
 
+    def view(self, *args, **kwargs):
+        """ Let the resources manager build a response
+        """
+        return self._resources_manager.view(*args, **kwargs)
+
 
 # EOF

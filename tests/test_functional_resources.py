@@ -45,9 +45,9 @@ class TestFunctional(base.Base, unittest.TestCase):
         self.config.rapids_add_resource(_Root, '', None)
         self.config.rapids_add_resource(_Foo, 'foo', _Root)
         self.config.rapids_add_resource(_Bar, 'bar{num}', _Root)
-        self.config.rapids_add_view(view=_root_view, context=_Root)
-        self.config.rapids_add_view(view=_root_view, context=_Foo)
-        self.config.rapids_add_view(view=_root_view, context=_Bar)
+        self.config.add_view(view=_root_view, context=_Root, rapids='')
+        self.config.add_view(view=_root_view, context=_Foo, rapids='')
+        self.config.add_view(view=_root_view, context=_Bar, rapids='')
         self.config.add_view(
             _http_exception_view,
             context=pyramid.httpexceptions.HTTPException,

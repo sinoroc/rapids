@@ -103,28 +103,17 @@ class Manager:
         return
 
     def add_view(self, **kwargs):
-        """ Add the view callable as a view for this resource
+        """ Add view to the internal structure
         """
-        view_config = kwargs.copy()
-        view_callable = view_config['view']
-        view_config['view'] = self._wrapped_view_callable_factory(
-            view_callable,
-        )
-        self._config.add_view(**view_config)
-        resource = self._resources_map.setdefault(view_config['context'], {})
-        request_method = view_config.get('request_method', 'get')
+        resource = self._resources_map.setdefault(kwargs['context'], {})
+        request_method = kwargs.get('request_method', None) or 'get'
         resource.setdefault('methods', {})[request_method.lower()] = {}
         return
 
-    @staticmethod
-    def _wrapped_view_callable_factory(view_callable):
-        def _wrapped_view_callable(*args, **kwargs):
-            # This is the function that is actually registered in Pyramid
-            return Manager._run_view_callable(view_callable, *args, **kwargs)
-        return _wrapped_view_callable
-
-    @staticmethod
-    def _run_view_callable(view_callable, *args, **kwargs):
+    def view(self, view_callable, *args, **kwargs):
+        """ Derived view callable
+        """
+        # pylint: disable=no-self-use
         # * do some pre processing (verify input)
         # result = pre_process(...)
         # * call the view callable
