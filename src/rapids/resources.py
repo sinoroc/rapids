@@ -167,7 +167,7 @@ class Manager:
             request,
             parent_object=None,
             uri_segment='',
-            uri_parameters={},
+            uri_parameters=None,
         )
         return root_object
 
