@@ -14,6 +14,8 @@ import re
 import zope.interface
 import zope.interface.verify  # Should not be needed.
 
+from . import exceptions
+
 
 class IResource(zope.interface.Interface):
     """ Interface for resources
@@ -47,7 +49,7 @@ class Base:
         self.__name__ = uri_segment
         self.__parent__ = parent_object
         self.request = request
-        self.uri_parameters = uri_parameters
+        self._uri_parameters = uri_parameters
         return
 
 
@@ -80,7 +82,7 @@ class Manager:
         self._config = config
         self._resources_tree = {}
         self._resources_map = {}
-        self._root_uri_segment_regex = self._build_uri_segment_regex('')
+        self._root_uri_segment_regex = _build_uri_segment_regex('')
         return
 
     @property
@@ -89,25 +91,32 @@ class Manager:
         """
         return self._resources_tree
 
-    def add_resource(self, resource_class, uri_segment_pattern, parent_class):
+    def add_resource(
+            self,
+            resource_class,
+            uri_segment_pattern,
+            parent_class,
+            uri_parameters=None,
+    ):
         """ Add resource at this URI segment pattern under this parent class
         """
         zope.interface.verify.verifyClass(IResource, resource_class)
-        uri_segment_regex = self._build_uri_segment_regex(uri_segment_pattern)
+        uri_segment_regex = _build_uri_segment_regex(uri_segment_pattern)
         resource_class.__getitem__ = self._get_child_resource_factory()
-        resource = self._resources_map.setdefault(resource_class, {})
-        resource['resource_class'] = resource_class
-        resource['uri_segment_pattern'] = uri_segment_pattern
+        resource_config = self._resources_map.setdefault(resource_class, {})
+        resource_config['resource_class'] = resource_class
+        resource_config['uri_parameters'] = uri_parameters or {}
+        resource_config['uri_segment_pattern'] = uri_segment_pattern
         uri_segment_regexes = self._resources_tree.setdefault(parent_class, {})
-        uri_segment_regexes[uri_segment_regex] = resource
+        uri_segment_regexes[uri_segment_regex] = resource_config
         return
 
     def add_view(self, **kwargs):
         """ Add view to the internal structure
         """
-        resource = self._resources_map.setdefault(kwargs['context'], {})
+        resource_config = self._resources_map.setdefault(kwargs['context'], {})
         request_method = kwargs.get('request_method', None) or 'get'
-        resource.setdefault('methods', {})[request_method.lower()] = {}
+        resource_config.setdefault('methods', {})[request_method.lower()] = {}
         return
 
     def view(self, view_callable, *args, **kwargs):
@@ -132,14 +141,14 @@ class Manager:
     def _get_child_resource(self, parent_object, uri_segment):
         child_object = None
         candidates = self._resources_tree[type(parent_object)]
-        for (uri_segment_regex, resource) in candidates.items():
-            uri_parameters = self._match_uri_segment_regex(
+        for (uri_segment_regex, resource_config) in candidates.items():
+            uri_parameters = _match_uri_segment_regex(
                 uri_segment_regex,
                 uri_segment,
             )
             if uri_parameters is not None:
-                child_object = self._instantiate_resource(
-                    resource,
+                child_object = _instantiate_resource(
+                    resource_config,
                     parent_object.request,
                     parent_object,
                     uri_segment,
@@ -153,7 +162,7 @@ class Manager:
     def get_root(self, request):
         """ Get Pyramid traversal root resource object
         """
-        root_object = self._instantiate_resource(
+        root_object = _instantiate_resource(
             self._resources_tree[None][self._root_uri_segment_regex],
             request,
             parent_object=None,
@@ -162,44 +171,63 @@ class Manager:
         )
         return root_object
 
-    @staticmethod
-    def _build_uri_segment_regex(uri_segment_pattern):
-        regex_tokens = []
-        split_regex = r'(\{[a-zA-Z][^\}]*\})'
-        uri_tokens = re.compile(split_regex).split(uri_segment_pattern)
-        for (idx, uri_token) in enumerate(uri_tokens):
-            if idx % 2 == 1:
-                regex_tokens.append('(?P<{}>[^/]+)'.format(uri_token[1:-1]))
-            else:
-                regex_tokens.append(uri_token)
-        return re.compile(''.join(regex_tokens) + '$')
 
-    @staticmethod
-    def _match_uri_segment_regex(uri_segment_regex, uri_segment):
-        uri_parameters = None
-        matched = uri_segment_regex.match(uri_segment)
-        if matched is not None:
-            uri_parameters = matched.groupdict()
-        return uri_parameters
+def _build_uri_segment_regex(uri_segment_pattern):
+    regex_tokens = []
+    split_regex = r'(\{[a-zA-Z][^\}]*\})'
+    uri_tokens = re.compile(split_regex).split(uri_segment_pattern)
+    for (idx, uri_token) in enumerate(uri_tokens):
+        if idx % 2 == 1:
+            regex_tokens.append('(?P<{}>[^/]+)'.format(uri_token[1:-1]))
+        else:
+            regex_tokens.append(uri_token)
+    return re.compile(''.join(regex_tokens) + '$')
 
-    @staticmethod
-    def _instantiate_resource(
-            resource,
-            request,
-            parent_object,
-            uri_segment,
-            uri_parameters,
-    ):
-        """ Instantiate a resource
-        """
-        resource_object = resource['resource_class'](
-            request,
-            parent_object,
-            uri_segment,
-            uri_parameters
-        )
-        zope.interface.verify.verifyObject(IResource, resource_object)
-        return resource_object
+
+def _match_uri_segment_regex(uri_segment_regex, uri_segment):
+    uri_parameters = None
+    matched = uri_segment_regex.match(uri_segment)
+    if matched is not None:
+        uri_parameters = matched.groupdict()
+    return uri_parameters
+
+
+def _instantiate_resource(
+        resource_config,
+        request,
+        parent_object,
+        uri_segment,
+        uri_parameters,
+):
+    _validate_uri_parameters(resource_config, uri_parameters)
+    resource_object = resource_config['resource_class'](
+        request,
+        parent_object,
+        uri_segment,
+        uri_parameters,
+    )
+    zope.interface.verify.verifyObject(IResource, resource_object)
+    return resource_object
+
+
+def _validate_uri_parameters(resource_config, uri_parameters):
+    for (name, config) in resource_config['uri_parameters'].items():
+        value = uri_parameters[name]
+        _validate_uri_parameter(value, config)
+    return
+
+
+def _validate_uri_parameter(value, config):
+    default_type = 'string'
+    ptype = config.get('type', default_type)
+    if ptype == 'integer':
+        if value.isdigit() is False:
+            raise exceptions.UriParameterWrongType()
+    elif ptype == 'string':
+        pass
+    else:
+        raise exceptions.UriParameterUnknownType()
+    return
 
 
 # EOF

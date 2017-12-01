@@ -27,7 +27,7 @@ class _Bar(rapids.resources.Base):
     pass
 
 
-def _root_view(resource, unused_request):
+def _common_view(resource, unused_request):
     return pyramid.httpexceptions.HTTPOk(resource.__name__)
 
 
@@ -44,10 +44,19 @@ class TestFunctional(base.Base, unittest.TestCase):
         self.config.include('rapids.config')
         self.config.rapids_add_resource(_Root, '', None)
         self.config.rapids_add_resource(_Foo, 'foo', _Root)
-        self.config.rapids_add_resource(_Bar, 'bar{num}', _Root)
-        self.config.add_view(view=_root_view, context=_Root, rapids='')
-        self.config.add_view(view=_root_view, context=_Foo, rapids='')
-        self.config.add_view(view=_root_view, context=_Bar, rapids='')
+        self.config.rapids_add_resource(
+            _Bar,
+            'bar{num}',
+            _Root,
+            uri_parameters={
+                'num': {
+                    'type': 'integer',
+                },
+            },
+        )
+        self.config.add_view(view=_common_view, context=_Root, rapids='')
+        self.config.add_view(view=_common_view, context=_Foo, rapids='')
+        self.config.add_view(view=_common_view, context=_Bar, rapids='')
         self.config.add_view(
             _http_exception_view,
             context=pyramid.httpexceptions.HTTPException,
@@ -55,32 +64,44 @@ class TestFunctional(base.Base, unittest.TestCase):
         self.test_application = webtest.TestApp(self.config.make_wsgi_app())
         return
 
-    def test_get_root(self):
+    def test_root(self):
         """ Root gives a valid response
         """
         self.test_application.get('/', status=200)
         return
 
-    def test_get_subresource(self):
+    def test_subresource(self):
         """ Subresource gives a valid response
         """
         response = self.test_application.get('/foo', status=200)
         self.assertIn('foo', response.text)
         return
 
-    def test_get_with_uri_parameterss(self):
+    def test_uri_parameters(self):
         """ Resource with URI parameters gives a valid response
         """
-        response = self.test_application.get('/barone', status=200)
-        self.assertIn('barone', response.text)
-        response = self.test_application.get('/bartwo', status=200)
-        self.assertIn('bartwo', response.text)
+        response = self.test_application.get('/bar1', status=200)
+        self.assertIn('bar1', response.text)
+        response = self.test_application.get('/bar2', status=200)
+        self.assertIn('bar2', response.text)
         return
 
-    def test_get_invalid_resource(self):
-        """ Invalid resource responds with 404
+    def test_uri_parameter_wrong_type(self):
+        """ Resource with URI parameter of the wrong type gives a "bad request"
         """
-        self.test_application.get('/bazthree', status=404)
+        self.test_application.get('/barthree', status=400)
+        return
+
+    def test_uri_parameter_missing(self):
+        """ Resource with URI parameter missing gives a "not found"
+        """
+        self.test_application.get('/bar', status=404)
+        return
+
+    def test_invalid_resource(self):
+        """ Invalid resource gives a "not found"
+        """
+        self.test_application.get('/nowhere', status=404)
         return
 
     def test_document_raml(self):
