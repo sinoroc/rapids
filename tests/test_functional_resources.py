@@ -104,12 +104,46 @@ class TestFunctional(base.Base, unittest.TestCase):
         self.test_application.get('/nowhere', status=404)
         return
 
+    def test_document_openapi(self):
+        """ A valid OpenAPI document is generated
+        """
+        util = self.config.registry.getUtility(rapids.utility.IUtility)
+        document_raw = util.get_document('application/openapi+yaml')
+        document_dict = yaml.load(document_raw)
+        expected_dict = {
+            'openapi': '3.0.0',
+            'info': {
+                'title': self.settings['rapids.title'],
+            },
+            'paths': {
+                '/': {
+                    'get': {},
+                    '/foo': {
+                        'get': {},
+                    },
+                    '/bar{num}': {
+                        'parameters': [{
+                            'in': 'path',
+                            'name': 'num',
+                            'required': True,
+                            'schema': {
+                                'type': 'integer',
+                            },
+                        }],
+                        'get': {},
+                    },
+                },
+            },
+        }
+        self.assertDictEqual(document_dict, expected_dict)
+        return
+
     def test_document_raml(self):
         """ A valid RAML document is generated
         """
         util = self.config.registry.getUtility(rapids.utility.IUtility)
-        raml_document = util.get_document('application/raml+yaml')
-        raml_dict = yaml.load(raml_document)
+        document_raw = util.get_document('application/raml+yaml')
+        document_dict = yaml.load(document_raw)
         expected_dict = {
             'title': self.settings['rapids.title'],
             '/': {
@@ -127,7 +161,7 @@ class TestFunctional(base.Base, unittest.TestCase):
                 },
             },
         }
-        self.assertDictEqual(raml_dict, expected_dict)
+        self.assertDictEqual(document_dict, expected_dict)
         return
 
 
