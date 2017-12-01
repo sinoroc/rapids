@@ -110,12 +110,24 @@ class TestFunctional(base.Base, unittest.TestCase):
         util = self.config.registry.getUtility(rapids.utility.IUtility)
         raml_document = util.get_document('application/raml+yaml')
         raml_dict = yaml.load(raml_document)
-        self.assertIn('/', raml_dict)
-        self.assertIn('get', raml_dict['/'])
-        self.assertIn('/foo', raml_dict['/'])
-        self.assertIn('get', raml_dict['/']['/foo'])
-        self.assertIn('/bar{num}', raml_dict['/'])
-        self.assertIn('get', raml_dict['/']['/bar{num}'])
+        expected_dict = {
+            'title': self.settings['rapids.title'],
+            '/': {
+                'get': {},
+                '/foo': {
+                    'get': {},
+                },
+                '/bar{num}': {
+                    'uriParameters': {
+                        'num': {
+                            'type': 'integer',
+                        },
+                    },
+                    'get': {},
+                },
+            },
+        }
+        self.assertDictEqual(raml_dict, expected_dict)
         return
 
 
