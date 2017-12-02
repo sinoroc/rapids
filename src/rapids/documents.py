@@ -2,6 +2,7 @@
 """
 
 
+from . import openapi
 from . import raml
 
 
@@ -17,6 +18,10 @@ class Manager:
     def build_documents(self, resources):
         """ Build documents for the resources
         """
+        self._documents['application/openapi+yaml'] = openapi.build(
+            self._config.registry.settings,
+            resources,
+        )
         self._documents['application/raml+yaml'] = raml.build(
             self._config.registry.settings,
             resources,
