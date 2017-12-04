@@ -4,12 +4,11 @@
 --requirement install.txt
 
 
-WebTest
-
-
 pytest
 pytest-pep8
 pytest-pylint
+readme_renderer  # needed for 'python setup.py check --restructuredtext'
+WebTest
 
 
 # EOF

@@ -13,6 +13,13 @@ Introduction
 
 Build automatically documented REST APIs with the `Pyramid framework`_.
 
+This library is available on the Python package index under the project name
+``rapids``:
+
+* https://pypi.python.org/pypi/rapids
+
+* https://pypi.org/project/rapids/
+
 
 Usage
 =====
@@ -92,10 +99,7 @@ Outside of a Python virtual environment run the following command::
     tox --recreate -e package
 
 
-Links
-=====
-
-.. target-notes::
+.. Links
 
 .. _`GNU Make`: https://www.gnu.org/software/make/
 .. _`Pyramid framework`: https://trypyramid.com/

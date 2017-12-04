@@ -2,7 +2,8 @@
 
 
 pyramid
-PyYaml
+PyYAML
+setuptools  # contains the pkg_resources module
 venusian
 zope.interface
 

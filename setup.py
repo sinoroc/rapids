@@ -8,12 +8,18 @@ import setuptools
 
 
 NAME = 'rapids'
-DESCRIPTION = "rapids library"
+DESCRIPTION = "REST APIs documented and sensible"
+URL = 'https://github.com/sinoroc/rapids'
+
+
+AUTHOR = 'sinoroc'
+AUTHOR_EMAIL = 'sinoroc.code+python@gmail.com'
 
 
 INSTALL_REQUIREMENTS = [
     'pyramid',
-    'PyYaml',
+    'PyYAML',
+    'setuptools',  # contains the pkg_resources module
     'venusian',
     'zope.interface',
 ]
@@ -42,14 +48,33 @@ PACKAGE_DIRECTORIES = {
 LICENSE = 'Apache-2.0'  # https://spdx.org/licenses/
 
 
+CLASSIFIERS = [
+    'Framework :: Pyramid',
+    'Intended Audience :: Developers',
+    'License :: OSI Approved :: Apache Software License',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.4',
+    'Programming Language :: Python :: 3.5',
+    'Programming Language :: Python :: 3.6',
+    'Topic :: Internet :: WWW/HTTP',
+    'Topic :: Software Development :: Libraries :: Application Frameworks',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+]
+
+
 def _do_setup():
     setuptools.setup(
-        # metadata
         name=NAME,
+        version=VERSION,
+        # metadata
+        author=AUTHOR,
+        author_email=AUTHOR_EMAIL,
+        classifiers=CLASSIFIERS,
         description=DESCRIPTION,
         license=LICENSE,
         long_description=LONG_DESCRIPTION,
-        version=VERSION,
+        url=URL,
         # options
         install_requires=INSTALL_REQUIREMENTS,
         package_dir=PACKAGE_DIRECTORIES,

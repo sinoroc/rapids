@@ -35,6 +35,11 @@ wheel:
 	python setup.py bdist_wheel
 
 
+.PHONY: check
+check:
+	python setup.py check --metadata --restructuredtext --strict
+
+
 .PHONY: lint
 lint:
 	pytest --pep8 --pylint -m 'pep8 or pylint'
@@ -60,7 +65,7 @@ pytest:
 
 
 .PHONY: review
-review:
+review: check
 	pytest --pep8 --pylint
 
 
