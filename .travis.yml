@@ -4,16 +4,53 @@
 language: 'python'
 
 python:
-    - '3.4'
-    - '3.5'
-    - '3.6'
+  - '3.4'
+  - '3.5'
+  - '3.6'
 
 install:
-    - 'pip install tox-travis'
+  - 'pip install tox-travis'
 
 script:
-    - 'tox'
-    - 'tox -e package'
+  - 'tox'
+  - 'tox -e package'
+
+deploy:
+  - provider: 'pypi'
+    distributions: 'sdist bdist_wheel'
+    user: 'sinoroc'
+    password:
+      secure: "\
+        UtU1UuISdpT0IL2M0lwPFAUWd1Ph8Cs+ZeEg/fwWAJmnqwxGkNXGjebbCMsu5dZgnNho6j\
+        u/Mn7VDgM3Zkar8YouWI6gZ+6AQj81ZTXkA8N4Jn3cb5GE+kbWLxYm/LZN56nss6SyXKWS\
+        sXT2ddgsqOv74t8sa+dY25adKI9Vp04SPVjZxBd+gWIFq7VZvjTbvLF3O3MifynDsrG2Jv\
+        TOOm6EDruUwCusPia3kmILorFiyJB4ipgsGnd+xZ3KHrc1m65u7DGEDs0z1jAtgs4S1tjn\
+        BZ4DgbVAleMeEIMH/UWQ30fRyWFgKWJ2hDCFosP9hk3fSns4sxZhQkT1SNITBzWKgKqOmJ\
+        Ebr/XovA1Qk7B2CE00KAKVCx+7uBVahvHfArdiMCCjwlvFIzKi4VBnkM0LHolpWp3kBdVB\
+        qg0QkCYdGeYRD97nA3LufpNuHlW/8r7a1cV4j4WAZ6i4ZyZD4Qp54j9TBqQ9+L8ZPjGhwE\
+        d78NINTLwygTeboUEnlfO/trJfLgqKNrEWkq77sJ4QqjP7x6Wwy5b0zm6Sl/dRKRrQGViE\
+        8GUlNVQGY49GPTbX3cPOzo/WgeFUoPB/WH5/UMMR/NUrSixfOmjWK7x2ZxuCiARM/U2DQD\
+        n6pGy7JZZq9/nZHUPamxpW3OKgGi+XQKW/ofakoCg6TpjN8dC5I8I="
+    on:
+      tags: true
+  - provider: 'releases'
+    api_key:
+      secure: "\
+        MzOuf6gKjO9zLf84bSkc2Rl1qoL7cP21PJsgIQwIByQLAnd3wLabLCc7UqlraKIUHKuZ8i\
+        gekBGeiDbxkwodT+egcgsv6d8AiDGTD3lCRuBwgfezfMcGynKEXtSwmG/mq6zmQakSOKNR\
+        FBfUHDuwf8WyKaPixGaU4Kx7AzURhJuYqsUA21vTiiwy0ndYtzXCRVa8zLgkhyU5+L+ewW\
+        jkir+3Dn8TpPt3Q/ITf4UHQ2oNzNWP53emU2E1qG/LWkumbG34Mh9tBdR6hKQBrZqWmkfT\
+        9bg3y1ApQs+Xcb3R0HGCb30GMqv2/dHMwKw8UQc3EXmyaWaRLZhAn6Le4K6IgRoHE9a8St\
+        V6EtgxsmB7yJxC7uGBPCJcuZ48qcG4LsAW9KGyyPyeh1V3bWZg6j6PerEOXojGYh4f/d10\
+        h1RJOls53ZpqzFeAHlQyUNOaddOO3OxncWdyiak6u++qqRJ1gGoDQNfIMvXONwGYAhMwSV\
+        G1pmUG9WtzEiIlWGil7S0kjfaCcIsfBieZhAnAooDM5cI7NXzNSaQn0H2spAInOMR1Dfv7\
+        xo2tifrLPpmRN0MUN/ZgAbzJjgJx82lYyq28+8IOyulmPY5U2D85vQlW7hrCeWDxDNuD6W\
+        Mjl0a+wLusGrObfLkOk/f5Hah67PK50gQQXJxXfFDYYZ8pliJszO8="
+    file_glob: true
+    file: 'dist/*'
+    skip_cleanup: true
+    on:
+      tags: true
 
 sudo: false
 
