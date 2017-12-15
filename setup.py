@@ -16,13 +16,31 @@ AUTHOR = 'sinoroc'
 AUTHOR_EMAIL = 'sinoroc.code+python@gmail.com'
 
 
-INSTALL_REQUIREMENTS = [
+REQUIREMENTS_INSTALL = [
     'pyramid',
     'PyYAML',
-    'setuptools',  # contains the pkg_resources module
+    'setuptools',  # needed for 'pkg_resources'
     'venusian',
     'zope.interface',
 ]
+
+REQUIREMENTS_PACKAGE = [
+    'wheel',
+]
+
+REQUIREMENTS_TEST = [
+    'pytest',
+    'pytest-pep8',
+    'pytest-pylint',
+    'readme_renderer',  # needed for 'python setup.py check --restructuredtext'
+    'WebTest',
+]
+
+REQUIREMENTS_EXTRAS = {
+    'develop': REQUIREMENTS_PACKAGE + REQUIREMENTS_TEST,
+    'package': REQUIREMENTS_PACKAGE,
+    'test': REQUIREMENTS_TEST,
+}
 
 
 HERE = os.path.abspath(os.path.dirname(__file__))
@@ -76,7 +94,8 @@ def _do_setup():
         long_description=LONG_DESCRIPTION,
         url=URL,
         # options
-        install_requires=INSTALL_REQUIREMENTS,
+        extras_require=REQUIREMENTS_EXTRAS,
+        install_requires=REQUIREMENTS_INSTALL,
         package_dir=PACKAGE_DIRECTORIES,
         packages=PACKAGES,
     )
