@@ -5,11 +5,11 @@
 import unittest
 
 import pyramid
-import rapids
 import yaml
 import webtest
 
 import base
+import rapids  # should be considered as a 3rd party import (isort issue?)
 
 
 class _Root(rapids.resources.Base):
