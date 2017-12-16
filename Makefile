@@ -5,7 +5,7 @@ toxenvname ?= unknown
 
 
 source_dir := ./src
-tests_dir := ./tests
+tests_dir := ./test
 
 
 .DEFAULT_GOAL := develop
