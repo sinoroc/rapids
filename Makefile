@@ -21,11 +21,6 @@ develop:
 	python setup.py develop
 
 
-.PHONY: install
-install:
-	python setup.py install
-
-
 .PHONY: package
 package: sdist wheel
 
@@ -42,7 +37,7 @@ wheel:
 
 .PHONY: check
 check:
-	python setup.py check --metadata --restructuredtext --strict
+	python setup.py check --restructuredtext
 
 
 .PHONY: lint
