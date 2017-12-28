@@ -1,0 +1,29 @@
+#
+
+
+'.test_common': &job_test_common
+  script:
+    - 'pip install tox'
+    - 'tox'
+    - 'tox -e package'
+
+'test py34':
+  <<: *job_test_common
+  image: 'python:3.4'
+  variables:
+    'TOXENV': 'py34'
+
+'test py35':
+  <<: *job_test_common
+  image: 'python:3.5'
+  variables:
+    'TOXENV': 'py35'
+
+'test py36':
+  <<: *job_test_common
+  image: 'python:3.6'
+  variables:
+    'TOXENV': 'py36'
+
+
+# EOF
