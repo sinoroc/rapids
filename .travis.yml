@@ -10,6 +10,12 @@ python:
   - '3.6'
   - '3.6-dev'
 
+matrix:
+  allow_failures:
+    - python: '3.5-dev'
+    - python: '3.6-dev'
+  fast_finish: true
+
 install:
   - 'pip install tox-travis'
 
