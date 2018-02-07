@@ -23,6 +23,7 @@ deploy:
     user: 'sinoroc'
     password: '${PYPI_SECRET}'
     on:
+      python: '3.6'
       tags: true
   - provider: 'releases'
     api_key: '${GITHUB_TOKEN}'
@@ -30,6 +31,7 @@ deploy:
     file: 'dist/*'
     skip_cleanup: true
     on:
+      python: '3.6'
       tags: true
 
 sudo: false
