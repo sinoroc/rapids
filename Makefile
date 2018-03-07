@@ -71,8 +71,8 @@ review: check
 
 .PHONY: clean
 clean:
-	$(RM) --recursive ./.cache/
 	$(RM) --recursive ./.eggs/
+	$(RM) --recursive ./.pytest_cache/
 	$(RM) --recursive ./build/
 	$(RM) --recursive ./dist/
 	$(RM) --recursive ./__pycache__/
