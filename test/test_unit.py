@@ -34,27 +34,25 @@ class TestAddResource(base.Base, unittest.TestCase):
     def test_add_valid_resource(self):
         """ Valid resources should be successfully added
         """
-        class ValidResource(rapids.resources.Base):
-            """ Valid resource
-            """
-            # pylint: disable=too-few-public-methods
+        class _ValidResource(
+                # pylint: disable=too-few-public-methods
+                rapids.resources.Base,
+        ):
             pass
         try:
-            self.config.rapids_add_resource(ValidResource, '', None)
+            self.config.rapids_add_resource(_ValidResource, '', None)
         except zope.interface.exceptions.DoesNotImplement as invalid_exception:
             self.fail(invalid_exception)
 
     def test_add_invalid_resource(self):
         """ Invalid resources should not be added
         """
-        class InvalidResource:
-            """ Invalid resource
-            """
-            # pylint: disable=too-few-public-methods
+        class _InvalidResource(
+                # pylint: disable=too-few-public-methods
+        ):
             pass
         with self.assertRaises(zope.interface.exceptions.DoesNotImplement):
-            self.config.rapids_add_resource(InvalidResource, '', None)
-        return
+            self.config.rapids_add_resource(_InvalidResource, '', None)
 
 
 # EOF

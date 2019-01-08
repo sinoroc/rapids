@@ -5,16 +5,20 @@ import pyramid
 import pyramid.httpexceptions  # should not be needed
 
 
-class UriParameterWrongType(pyramid.httpexceptions.HTTPBadRequest):
-    """ URI parameter has the wrong type """
-    # pylint: disable=too-many-ancestors
-    pass
+class UriParameterWrongType(
+        # pylint: disable=too-many-ancestors
+        pyramid.httpexceptions.HTTPBadRequest,
+):
+    """ URI parameter has the wrong type
+    """
 
 
-class UriParameterUnknownType(pyramid.httpexceptions.HTTPBadRequest):
-    """ URI parameter has an unknown type """
-    # pylint: disable=too-many-ancestors
-    pass
+class UriParameterUnknownType(
+        # pylint: disable=too-many-ancestors
+        pyramid.httpexceptions.HTTPBadRequest,
+):
+    """ URI parameter has an unknown type
+    """
 
 
 # EOF
