@@ -21,7 +21,6 @@ class TestProjectVersion(unittest.TestCase):
             rapids.__version__
         except AttributeError as version_exception:
             self.fail(version_exception)
-        return
 
 
 class TestAddResource(base.Base, unittest.TestCase):
@@ -31,7 +30,6 @@ class TestAddResource(base.Base, unittest.TestCase):
     def setUp(self):
         self.config = pyramid.testing.setUp()
         self.config.include('rapids.config')
-        return
 
     def test_add_valid_resource(self):
         """ Valid resources should be successfully added
@@ -45,7 +43,6 @@ class TestAddResource(base.Base, unittest.TestCase):
             self.config.rapids_add_resource(ValidResource, '', None)
         except zope.interface.exceptions.DoesNotImplement as invalid_exception:
             self.fail(invalid_exception)
-        return
 
     def test_add_invalid_resource(self):
         """ Invalid resources should not be added

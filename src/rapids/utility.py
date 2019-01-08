@@ -26,7 +26,6 @@ class Utility:
     def __init__(self, config):
         self._documents_manager = documents.Manager(config)
         self._resources_manager = resources.Manager(config)
-        return
 
     def add_resource(self, *args, **kwargs):
         """ Let the resources manager add a resource

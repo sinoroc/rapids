@@ -35,7 +35,6 @@ class _ViewDeriver:
         if info.options.get('rapids', None) is not None:
             self._util = info.registry.getUtility(utility.IUtility)
             self._util.add_view(**info.options)
-        return
 
     def __call__(self, *args, **kwargs):
         response = None
@@ -58,7 +57,6 @@ def includeme(config):
         pyramid.events.ApplicationCreated,
     )
     config.set_root_factory(_get_root)
-    return
 
 
 # EOF

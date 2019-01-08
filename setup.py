@@ -100,7 +100,6 @@ def _do_setup():
         package_dir=package_directories,
         packages=packages,
     )
-    return
 
 
 if __name__ == '__main__':
