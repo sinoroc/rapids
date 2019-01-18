@@ -22,9 +22,9 @@ LICENSE = 'Apache-2.0'  # https://spdx.org/licenses/
 
 
 REQUIREMENTS_INSTALL = [
+    'pkginfo',
     'pyramid',
     'PyYAML',
-    'setuptools',  # needed for 'pkg_resources'
     'venusian',
     'zope.interface',
 ]

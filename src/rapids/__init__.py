@@ -2,7 +2,7 @@
 """
 
 
-import pkg_resources
+import pkginfo
 
 from . import config
 from . import decorators
@@ -11,9 +11,7 @@ from . import resources
 
 
 # PEP 396
-__version__ = pkg_resources.get_distribution(
-    'rapids',  # http://stackoverflow.com/a/22845276
-).version
+__version__ = pkginfo.Installed('rapids').version
 
 
 # EOF
