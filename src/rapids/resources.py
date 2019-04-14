@@ -50,7 +50,6 @@ class Base:
         self.__parent__ = parent_object
         self.request = request
         self._uri_parameters = uri_parameters
-        return
 
 
 class Manager:
@@ -83,7 +82,6 @@ class Manager:
         self._resources_tree = {}
         self._resources_map = {}
         self._root_uri_segment_regex = _build_uri_segment_regex('')
-        return
 
     @property
     def resources_tree(self):
@@ -109,7 +107,6 @@ class Manager:
         resource_config['uri_segment_pattern'] = uri_segment_pattern
         uri_segment_regexes = self._resources_tree.setdefault(parent_class, {})
         uri_segment_regexes[uri_segment_regex] = resource_config
-        return
 
     def add_view(self, **kwargs):
         """ Add view to the internal structure
@@ -117,7 +114,6 @@ class Manager:
         resource_config = self._resources_map.setdefault(kwargs['context'], {})
         request_method = kwargs.get('request_method', None) or 'get'
         resource_config.setdefault('methods', {})[request_method.lower()] = {}
-        return
 
     def view(self, view_callable, *args, **kwargs):
         """ Derived view callable
@@ -214,7 +210,6 @@ def _validate_uri_parameters(resource_config, uri_parameters):
     for (name, config) in resource_config['uri_parameters'].items():
         value = uri_parameters[name]
         _validate_uri_parameter(value, config)
-    return
 
 
 def _validate_uri_parameter(value, config):
@@ -227,7 +222,6 @@ def _validate_uri_parameter(value, config):
         pass
     else:
         raise exceptions.UriParameterUnknownType()
-    return
 
 
 # EOF

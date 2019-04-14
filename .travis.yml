@@ -1,5 +1,7 @@
-#
+---
 
+
+dist: 'xenial'
 
 language: 'python'
 
@@ -9,13 +11,16 @@ python:
   - '3.5-dev'
   - '3.6'
   - '3.6-dev'
+  - '3.7'
   - '3.7-dev'
+  - '3.8-dev'
 
 matrix:
   allow_failures:
     - python: '3.5-dev'
     - python: '3.6-dev'
     - python: '3.7-dev'
+    - python: '3.8-dev'
   fast_finish: true
 
 install:
@@ -45,4 +50,4 @@ deploy:
 sudo: false
 
 
-# EOF
+... EOF

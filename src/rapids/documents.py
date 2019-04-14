@@ -13,7 +13,6 @@ class Manager:
     def __init__(self, config):
         self._config = config
         self._documents = {}
-        return
 
     def build_documents(self, resources):
         """ Build documents for the resources
@@ -26,7 +25,6 @@ class Manager:
             self._config.registry.settings,
             resources,
         )
-        return
 
     def get_document(self, media_type):
         """ Get document for the media type

@@ -22,7 +22,7 @@ develop:
 
 
 .PHONY: package
-package: sdist wheel
+package: sdist wheel check
 
 
 .PHONY: sdist
@@ -36,8 +36,9 @@ wheel:
 
 
 .PHONY: check
-check:
-	python setup.py check --restructuredtext
+check: sdist wheel
+	twine check dist/*.tar.gz
+	twine check dist/*.whl
 
 
 .PHONY: lint
@@ -65,14 +66,14 @@ pytest:
 
 
 .PHONY: review
-review: check
+review:
 	pytest --pep8 --pylint
 
 
 .PHONY: clean
 clean:
-	$(RM) --recursive ./.cache/
 	$(RM) --recursive ./.eggs/
+	$(RM) --recursive ./.pytest_cache/
 	$(RM) --recursive ./build/
 	$(RM) --recursive ./dist/
 	$(RM) --recursive ./__pycache__/

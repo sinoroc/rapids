@@ -22,15 +22,16 @@ LICENSE = 'Apache-2.0'  # https://spdx.org/licenses/
 
 
 REQUIREMENTS_INSTALL = [
+    'pkginfo',
     'pyramid',
     'PyYAML',
-    'setuptools',  # needed for 'pkg_resources'
     'venusian',
     'zope.interface',
 ]
 
 
 REQUIREMENTS_PACKAGE = [
+    'twine',
     'wheel',
 ]
 
@@ -39,7 +40,6 @@ REQUIREMENTS_TEST = [
     'pytest',
     'pytest-pep8',
     'pytest-pylint',
-    'readme_renderer',  # for 'setup.py check --restructuredtext'
     'WebTest',
 ]
 
@@ -59,6 +59,7 @@ CLASSIFIERS = [
     'Programming Language :: Python :: 3.4',
     'Programming Language :: Python :: 3.5',
     'Programming Language :: Python :: 3.6',
+    'Programming Language :: Python :: 3.7',
     'Topic :: Internet :: WWW/HTTP',
     'Topic :: Software Development :: Libraries :: Application Frameworks',
     'Topic :: Software Development :: Libraries :: Python Modules',
@@ -100,7 +101,6 @@ def _do_setup():
         package_dir=package_directories,
         packages=packages,
     )
-    return
 
 
 if __name__ == '__main__':

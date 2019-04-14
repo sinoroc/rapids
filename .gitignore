@@ -3,8 +3,8 @@
 
 # Python
 /*.egg
-/.cache/
 /.eggs/
+/.pytest_cache/
 /.tox/
 /build/
 /dist/

@@ -8,11 +8,12 @@ from . import documents
 from . import resources
 
 
-class IUtility(zope.interface.Interface):
+class IUtility(
+        # pylint: disable=inherit-non-class
+        zope.interface.Interface,
+):
     """ Interface for the utility
     """
-    # pylint: disable=inherit-non-class
-    pass
 
 
 @zope.interface.implementer(IUtility)
@@ -26,7 +27,6 @@ class Utility:
     def __init__(self, config):
         self._documents_manager = documents.Manager(config)
         self._resources_manager = resources.Manager(config)
-        return
 
     def add_resource(self, *args, **kwargs):
         """ Let the resources manager add a resource

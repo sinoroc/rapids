@@ -20,7 +20,6 @@ class _ResourceHelper:
     def __init__(self, uri_segment_pattern, parent_class):
         self._uri_segment_pattern = uri_segment_pattern
         self._parent_class = parent_class
-        return
 
     def __call__(self, resource_class):
         venusian.attach(resource_class, self._callback)
@@ -37,7 +36,6 @@ class _ResourceHelper:
             self._uri_segment_pattern,
             self._parent_class,
         )
-        return
 
 
 # EOF
