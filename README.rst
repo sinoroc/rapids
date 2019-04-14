@@ -16,8 +16,6 @@ Build automatically documented REST APIs with the `Pyramid framework`_.
 This library is available on the Python package index under the project name
 ``rapids``:
 
-* https://pypi.python.org/pypi/rapids
-
 * https://pypi.org/project/rapids/
 
 
