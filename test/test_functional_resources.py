@@ -103,7 +103,7 @@ class TestFunctional(base.Base, unittest.TestCase):
         """
         util = self.config.registry.getUtility(rapids.utility.IUtility)
         document_raw = util.get_document('application/openapi+yaml')
-        document_dict = yaml.load(document_raw)
+        document_dict = yaml.safe_load(document_raw)
         expected_dict = {
             'openapi': '3.0.0',
             'info': {
@@ -136,7 +136,7 @@ class TestFunctional(base.Base, unittest.TestCase):
         """
         util = self.config.registry.getUtility(rapids.utility.IUtility)
         document_raw = util.get_document('application/raml+yaml')
-        document_dict = yaml.load(document_raw)
+        document_dict = yaml.safe_load(document_raw)
         expected_dict = {
             'title': self.settings['rapids.title'],
             '/': {
