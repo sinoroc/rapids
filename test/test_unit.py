@@ -7,8 +7,9 @@ import unittest
 import pyramid.testing
 import zope.interface
 
+import rapids
+
 import base
-import rapids  # should be considered as a 3rd party import (isort issue?)
 
 
 class TestProjectVersion(unittest.TestCase):
