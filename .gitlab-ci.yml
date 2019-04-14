@@ -1,4 +1,4 @@
-#
+---
 
 
 '.test_common': &job_test_common
@@ -32,4 +32,4 @@
     'TOXENV': 'py37'
 
 
-# EOF
+... EOF

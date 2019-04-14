@@ -1,4 +1,4 @@
-#
+---
 
 
 dist: 'xenial'
@@ -50,4 +50,4 @@ deploy:
 sudo: false
 
 
-# EOF
+... EOF
