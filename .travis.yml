@@ -6,7 +6,6 @@ dist: 'xenial'
 language: 'python'
 
 python:
-  - '3.4'
   - '3.5'
   - '3.5-dev'
   - '3.6'
@@ -24,19 +23,20 @@ matrix:
   fast_finish: true
 
 install:
-  - 'pip install tox-travis'
+  - 'python3 -m pip install --upgrade pip setuptools'
+  - 'python3 -m pip install --upgrade tox tox-travis tox-venv'
 
 script:
-  - 'tox'
-  - 'tox -e package'
+  - 'python3 -m tox'
+  - 'python3 -m tox -e package'
 
 deploy:
   - provider: 'pypi'
     distributions: 'sdist bdist_wheel'
-    user: 'sinoroc'
-    password: '${PYPI_SECRET}'
+    user: '${PYPI_USER}'
+    password: '${PYPI_PASSWORD}'
     on:
-      python: '3.6'
+      python: '3.7'
       tags: true
   - provider: 'releases'
     api_key: '${GITHUB_TOKEN}'
@@ -44,7 +44,7 @@ deploy:
     file: 'dist/*'
     skip_cleanup: true
     on:
-      python: '3.6'
+      python: '3.7'
       tags: true
 
 sudo: false

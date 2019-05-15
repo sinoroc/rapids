@@ -1,9 +1,6 @@
 #
 
 
-toxenvname ?= unknown
-
-
 source_dir := ./src
 tests_dir := ./test
 
@@ -11,49 +8,45 @@ tests_dir := ./test
 .DEFAULT_GOAL := develop
 
 
-.PHONY: nothing
-nothing:
-	true
-
-
 .PHONY: develop
 develop:
-	python setup.py develop
+	python3 setup.py develop
 
 
 .PHONY: package
-package: sdist wheel check
+package: sdist wheel
 
 
 .PHONY: sdist
 sdist:
-	python setup.py sdist
+	python3 setup.py sdist
+	python3 -m twine check dist/*.tar.gz
 
 
 .PHONY: wheel
 wheel:
-	python setup.py bdist_wheel
+	python3 setup.py bdist_wheel
+	python3 -m twine check dist/*.whl
 
 
 .PHONY: check
-check: sdist wheel
-	twine check dist/*.tar.gz
-	twine check dist/*.whl
+check:
+	python3 setup.py check
 
 
 .PHONY: lint
 lint:
-	pytest --pep8 --pylint -m 'pep8 or pylint'
+	python3 -m pytest --pep8 --pylint -m 'pep8 or pylint'
 
 
 .PHONY: pep8
 pep8:
-	pytest --pep8 -m pep8
+	python3 -m pytest --pep8 -m pep8
 
 
 .PHONY: pylint
 pylint:
-	pytest --pylint -m pylint
+	python3 -m pytest --pylint -m pylint
 
 
 .PHONY: test
@@ -62,12 +55,12 @@ test: pytest
 
 .PHONY: pytest
 pytest:
-	pytest
+	python3 -m pytest
 
 
 .PHONY: review
-review:
-	pytest --pep8 --pylint
+review: check
+	python3 -m pytest --pep8 --pylint
 
 
 .PHONY: clean

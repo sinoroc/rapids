@@ -3,15 +3,10 @@
 
 '.test_common': &job_test_common
   script:
-    - 'pip install tox'
-    - 'tox'
-    - 'tox -e package'
-
-'test py34':
-  <<: *job_test_common
-  image: 'python:3.4'
-  variables:
-    'TOXENV': 'py34'
+    - 'python3 -m pip install --upgrade pip setuptools'
+    - 'python3 -m pip install --upgrade tox'
+    - 'python3 -m tox'
+    - 'python3 -m tox -e package'
 
 'test py35':
   <<: *job_test_common
@@ -30,6 +25,12 @@
   image: 'python:3.7'
   variables:
     'TOXENV': 'py37'
+
+'test py38 dev':
+  <<: *job_test_common
+  image: 'python:3.8-rc'
+  variables:
+    'TOXENV': 'py38'
 
 
 ... EOF
