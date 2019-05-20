@@ -3,8 +3,7 @@
 
 '.test_common': &job_test_common
   script:
-    - 'python3 -m pip install --upgrade pip setuptools'
-    - 'python3 -m pip install --upgrade tox'
+    - 'python3 -m pip install tox'
     - 'python3 -m tox'
     - 'python3 -m tox -e package'
 

@@ -23,8 +23,7 @@ matrix:
   fast_finish: true
 
 install:
-  - 'python3 -m pip install --upgrade pip setuptools'
-  - 'python3 -m pip install --upgrade tox tox-travis tox-venv'
+  - 'python3 -m pip install tox tox-travis tox-venv'
 
 script:
   - 'python3 -m tox'
