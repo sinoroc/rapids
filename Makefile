@@ -5,7 +5,11 @@ source_dir := ./src
 tests_dir := ./test
 
 
-.DEFAULT_GOAL := develop
+.DEFAULT_GOAL := refresh
+
+
+.PHONY: refresh
+refresh: clean develop review package
 
 
 .PHONY: develop
