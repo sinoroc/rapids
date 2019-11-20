@@ -7,12 +7,6 @@
     - 'python3 -m tox'
     - 'python3 -m tox -e package'
 
-'test py35':
-  <<: *job_test_common
-  image: 'python:3.5'
-  variables:
-    'TOXENV': 'py35'
-
 'test py36':
   <<: *job_test_common
   image: 'python:3.6'
@@ -25,9 +19,9 @@
   variables:
     'TOXENV': 'py37'
 
-'test py38 dev':
+'test py38':
   <<: *job_test_common
-  image: 'python:3.8-rc'
+  image: 'python:3.8'
   variables:
     'TOXENV': 'py38'
 

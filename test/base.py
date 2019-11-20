@@ -15,7 +15,7 @@ class Base:
     }
 
     def tearDown(self):
-        # pylint: disable=invalid-name, no-self-use, missing-docstring
+        # pylint: disable=invalid-name, no-self-use, missing-function-docstring
         pyramid.testing.tearDown()
 
 
